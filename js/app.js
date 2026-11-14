@@ -41,5 +41,19 @@ async function init() {
 $("search").setAttribute("aria-label","サイト名を検索");
 $("search").addEventListener("input", e => { state.query = e.target.value.trim(); render(); });
 $("sort").addEventListener("change", e => { state.sort = e.target.value; render(); });
-$("theme-toggle").addEventListener("click", () => { const dark = document.documentElement.dataset.theme !== "dark"; document.documentElement.dataset.theme = dark ? "dark" : ""; $("theme-toggle").textContent = dark ? "☀" : "☾"; });
+const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+const themeButton = $("theme-toggle");
+const root = document.documentElement;
+const isDark = () => root.dataset.theme ? root.dataset.theme === "dark" : systemTheme.matches;
+function syncThemeButton() {
+  const dark = isDark();
+  themeButton.textContent = dark ? "☀" : "☾";
+  themeButton.setAttribute("aria-label", dark ? "ライトモードに切り替え" : "ダークモードに切り替え");
+}
+themeButton.addEventListener("click", () => {
+  root.dataset.theme = isDark() ? "light" : "dark";
+  syncThemeButton();
+});
+systemTheme.addEventListener("change", syncThemeButton);
+syncThemeButton();
 init();
