@@ -10,7 +10,6 @@ function button(text, active, action) {
 }
 let categories = null;
 let audiences = null;
-const defaults = [{id:"common",name:"共通"},{id:"self",name:"自分"},{id:"family",name:"家族"}];
 const categoryKey = x => categories ? x.category_id || categories.find(c => c.name === x.category)?.id || x.category : x.category;
 const categoryName = x => categories?.find(c => c.id === categoryKey(x))?.name ?? x.category;
 const audienceKeys = x => (x.audience || "common").split(/[,、]/).map(v => v.trim());
@@ -30,7 +29,7 @@ function renderFilters() {
     [...new Set(state.links.map(x=>x.category).filter(Boolean))].map(name=>({id:name,name}));
   for (const [element,key,rows] of [
     ["category-filters","category",categoryOptions],
-    ["audience-filters","audience",audiences?.filter(x=>x.enabled) ?? defaults]
+    ["audience-filters","audience",audiences?.filter(x=>x.enabled) ?? [{id:"common",name:"共通"}]]
   ]) {
     $(element).replaceChildren(...[{id:"all",name:"すべて"},...rows].map(x =>
       button(x.name,state[key]===x.id,()=>{state[key]=x.id;renderFilters();render();})));
