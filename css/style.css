@@ -36,3 +36,26 @@
 .filter-body .toolbar{flex-direction:column}
 .status-row{margin:9px 2px 8px}
 }
+
+/* Follow the operating-system appearance until the user changes it manually. */
+:root { --glow: #e9edff; }
+body { background: radial-gradient(circle at 0 0,var(--glow),transparent 32rem),var(--bg); }
+:root[data-theme="dark"] { --glow: #1b2941; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: #111522;
+    --panel: #1b2131;
+    --text: #eef2ff;
+    --muted: #9ca6bd;
+    --line: #30394d;
+    --shadow: 0 12px 32px #0005;
+    --glow: #1b2941;
+  }
+}
+/* Keep the navigation first and links visible without scrolling. */
+.app-shell { padding-bottom: 40px; }
+.link-card { min-height: 132px; padding: 14px 10px; }
+@media (max-width: 560px) {
+  .link-card { min-height: 124px; padding: 12px 8px; }
+}
