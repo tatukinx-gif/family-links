@@ -87,6 +87,19 @@ async function init() {
 $("search").setAttribute("aria-label","サイト名を検索");
 $("search").addEventListener("input", e => { state.query = e.target.value.trim(); render(); });
 $("sort").addEventListener("change", e => { state.sort = e.target.value; render(); });
+const filterDetails = $("filter-details");
+document.addEventListener("pointerdown", event => {
+  if (filterDetails?.open && !event.composedPath().includes(filterDetails)) {
+    filterDetails.open = false;
+  }
+});
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && filterDetails?.open) {
+    event.preventDefault();
+    filterDetails.open = false;
+    filterDetails.querySelector("summary").focus({preventScroll:true});
+  }
+});
 const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
 const themeButton = $("theme-toggle");
 const root = document.documentElement;
