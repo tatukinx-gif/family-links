@@ -65,3 +65,20 @@ body { background: radial-gradient(circle at 0 0,var(--glow),transparent 32rem),
   .link-name { font-size: 12px; }
   .search input { min-width: 0; }
 }
+
+/* The categories scroll independently; the popover doesn't move the grid. */
+.quick-controls { align-items: center; }
+#category-filters {
+  flex-wrap: nowrap;
+  margin: 0;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 4px;
+  scrollbar-width: thin;
+}
+#category-filters .chip { flex: none; white-space: nowrap; }
+.filter-body .search { width: 100%; }
+@media (max-width: 560px) {
+  #category-filters { gap: 5px; }
+  #category-filters .chip { padding: 7px 10px; font-size: 12px; }
+}
