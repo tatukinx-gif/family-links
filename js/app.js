@@ -13,7 +13,7 @@ const storedCategoryName = x => x.category_name || x.category || "";
 let audiences = null;
 const categoryKey = x => categories ? x.category_id || categories.find(c => c.name === storedCategoryName(x))?.id || storedCategoryName(x) : storedCategoryName(x);
 const categoryName = x => categories?.find(c => c.id === categoryKey(x))?.name ?? storedCategoryName(x);
-const audienceKeys = x => (x.audience || "common").split(/[,、]/).map(v => v.trim());
+const audienceKeys = x => ((Object.hasOwn(x, "audience_id") ? x.audience_id : x.audience) || "common").split(/[,、]/).map(v => v.trim());
 const options = rows => {
   if (!rows) return null;
   const seen = new Set(["all"]);
