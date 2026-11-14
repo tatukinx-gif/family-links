@@ -22,14 +22,14 @@ const options = rows => {
 };
 function eligible(x) {
   const category = categories?.find(c => c.id === categoryKey(x));
-  return category?.enabled !== false && (!audiences || audienceKeys(x).some(id => audiences.find(a => a.id === id)?.enabled !== false));
+  return category?.enabled !== false;
 }
 function renderFilters() {
   const categoryOptions = categories?.filter(x=>x.enabled) ??
     [...new Set(state.links.map(x=>x.category).filter(Boolean))].map(name=>({id:name,name}));
   for (const [element,key,rows] of [
     ["category-filters","category",categoryOptions],
-    ["audience-filters","audience",audiences?.filter(x=>x.enabled) ?? [{id:"common",name:"共通"}]]
+    ["audience-filters","audience",audiences?.filter(x=>x.enabled && x.id !== "common") ?? []]
   ]) {
     $(element).replaceChildren(...[{id:"all",name:"すべて"},...rows].map(x =>
       button(x.name,state[key]===x.id,()=>{state[key]=x.id;renderFilters();render();})));
@@ -53,8 +53,12 @@ function applySettings(rows) {
   }
 }
 function order(x) { return x.order.trim() !== "" && Number.isFinite(Number(x.order)) ? Number(x.order) : 9999; }
+function matchesAudience(link, selected) {
+  const ids = audienceKeys(link);
+  return selected === "all" || ids.includes("common") || ids.includes(selected);
+}
 function render() {
-  const links = state.links.filter(x => eligible(x) && x.name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase()) && (state.category === "all" || categoryKey(x) === state.category) && (state.audience === "all" || audienceKeys(x).includes(state.audience)));
+  const links = state.links.filter(x => eligible(x) && x.name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase()) && (state.category === "all" || categoryKey(x) === state.category) && matchesAudience(x, state.audience));
   links.sort((a,b) => state.sort === "name" ? a.name.localeCompare(b.name,"ja") : state.sort === "category" ? (categories ? order(categories.find(c=>c.id===categoryKey(a)) ?? {order:""}) - order(categories.find(c=>c.id===categoryKey(b)) ?? {order:""}) : categoryName(a).localeCompare(categoryName(b),"ja")) || order(a)-order(b) : order(a)-order(b));
   $("result-count").textContent = links.length + "件";
   $("link-grid").replaceChildren(...links.map(x => {
