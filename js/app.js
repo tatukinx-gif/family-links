@@ -9,9 +9,10 @@ function button(text, active, action) {
   return b;
 }
 let categories = null;
+const storedCategoryName = x => x.category_name || x.category || "";
 let audiences = null;
-const categoryKey = x => categories ? x.category_id || categories.find(c => c.name === x.category)?.id || x.category : x.category;
-const categoryName = x => categories?.find(c => c.id === categoryKey(x))?.name ?? x.category;
+const categoryKey = x => categories ? x.category_id || categories.find(c => c.name === storedCategoryName(x))?.id || storedCategoryName(x) : storedCategoryName(x);
+const categoryName = x => categories?.find(c => c.id === categoryKey(x))?.name ?? storedCategoryName(x);
 const audienceKeys = x => (x.audience || "common").split(/[,、]/).map(v => v.trim());
 const options = rows => {
   if (!rows) return null;
@@ -26,7 +27,7 @@ function eligible(x) {
 }
 function renderFilters() {
   const categoryOptions = categories?.filter(x=>x.enabled) ??
-    [...new Set(state.links.map(x=>x.category).filter(Boolean))].map(name=>({id:name,name}));
+    [...new Set(state.links.map(storedCategoryName).filter(Boolean))].map(name=>({id:name,name}));
   for (const [element,key,rows] of [
     ["category-filters","category",categoryOptions],
     ["audience-filters","audience",audiences?.filter(x=>x.enabled && x.id !== "common") ?? []]
