@@ -63,15 +63,14 @@ function render() {
   links.sort((a,b) => state.sort === "name" ? a.name.localeCompare(b.name,"ja") : state.sort === "category" ? (categories ? order(categories.find(c=>c.id===categoryKey(a)) ?? {order:""}) - order(categories.find(c=>c.id===categoryKey(b)) ?? {order:""}) : categoryName(a).localeCompare(categoryName(b),"ja")) || order(a)-order(b) : order(a)-order(b));
   $("result-count").textContent = links.length + "件";
   $("link-grid").replaceChildren(...links.map(x => {
-    const a = document.createElement("a"); a.className = "link-card"; a.href = x.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+    const a = document.createElement("a"); a.className = "link-card"; a.href = x.url; a.target = "_blank"; a.rel = "noopener noreferrer"; a.title = x.name;
     const fallback = document.createElement("span"); fallback.className = "favicon fallback"; fallback.textContent = Array.from(x.name)[0] || "F"; fallback.setAttribute("aria-hidden","true");
     const img = document.createElement("img"); img.className = "favicon"; img.alt = ""; img.loading = "lazy"; img.referrerPolicy = "no-referrer";
     const auto = "https://www.google.com/s2/favicons?domain=" + encodeURIComponent(new URL(x.url).hostname) + "&sz=128";
     img.src = safeUrl(x.icon_url) || auto;
     img.onerror = () => { if (img.src !== auto) { img.src = auto; } else { img.replaceWith(fallback); } };
     const name = document.createElement("span"); name.className = "link-name"; name.textContent = x.name;
-    const meta = document.createElement("span"); meta.className = "link-meta"; meta.textContent = categoryName(x);
-    a.append(img,name,meta); return a;
+    a.append(img,name); return a;
   }));
   if (!links.length) { const p = document.createElement("p"); p.className = "empty"; p.textContent = "条件に合うリンクがありません"; $("link-grid").append(p); }
 }
