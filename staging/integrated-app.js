@@ -86,9 +86,6 @@ function render() {
   }));
   if (!links.length) { const p = document.createElement("p"); p.className = "empty"; p.textContent = "条件に合うリンクがありません"; $("link-grid").append(p); }
 }
-// Version 1 of the staging API still defaults empty audiences to common.
-// Allow only the audited staging IDs until the stricter server is deployed.
-const explicitCommon = new Set(["staging-link-1","staging-link-2","staging-link-3","staging-link-4","staging-link-7","staging-link-8","staging-link-d","staging-link-e","staging-link-f","staging-link-g","staging-link-h","staging-link-i","staging-link-j","staging-link-k","staging-link-l","staging-link-m","staging-link-n","staging-link-o","staging-link-p","staging-link-q","staging-link-r","staging-link-s","staging-link-t","staging-link-u","staging-link-v","staging-link-w","staging-link-x","staging-link-y","staging-link-z","staging-link-10","staging-link-11","staging-link-12","staging-link-13","staging-link-14","staging-link-15","staging-link-16","staging-link-17"]);
 const registration = $("registration");
 const registrationMessage = $("registration-status");
 const registerButton = $("register-device");
@@ -127,7 +124,7 @@ async function refresh() {
     if (currentAudience?.id !== data.audience?.id) state.audience = "all";
     currentAudience = data.audience;
     state.links = data.links.filter(x => safeUrl(x.url) &&
-      (x.common ? explicitCommon.has(x.link_id) : Boolean(currentAudience)))
+      (x.common === true || Boolean(currentAudience)))
       .map(x => ({...x, url:safeUrl(x.url), can_hide: !x.common && x.can_hide}));
     registerButton.hidden = data.status !== "unregistered";
     registrationMessage.textContent = data.status === "pending" ? "管理者の承認待ち" :
