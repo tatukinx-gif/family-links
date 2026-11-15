@@ -3,4 +3,28 @@
 <link rel="icon" type="image/png" sizes="48x48" href="assets/icons/icon-48.png?v=1">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-180.png?v=1">
 <link rel="manifest" href="manifest.webmanifest?v=1">
-<style>.managed-tile{position:relative;min-width:0}.managed-tile .link-card{height:100%}.hide-link{position:absolute;top:0;right:0;min-width:44px;min-height:44px;border:0;background:transparent;color:inherit;cursor:pointer}dialog{max-width:min(28rem,85vw);border-radius:12px}#registration{flex-wrap:wrap}#registration button[hidden]{display:none}</style></head><body><main class="app-shell"><header class="topbar"><div><p class="eyebrow">FAMILY LINKS</p><h1>お気に入りを、ひとつに。</h1></div><button id="theme-toggle" class="icon-button" type="button" aria-label="テーマ切り替え">☾</button></header><section class="controls" aria-label="検索と表示設定"><div class="quick-controls"><div id="category-filters" class="chip-row" role="group" aria-label="カテゴリ"></div><details class="filter-details" id="filter-details"><summary>絞り込み <span class="filter-chevron" aria-hidden="true">⌄</span></summary><div class="filter-body"><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="サイト名を検索" autocomplete="off"></label><div class="toolbar"><div id="audience-filters" class="segmented" aria-label="利用者"></div><label class="sort">並び順<select id="sort"><option value="order">おすすめ順</option><option value="name">名前順</option><option value="category">カテゴリ順</option></select></label></div></div></details></div></section><section class="status-row" id="registration" aria-label="端末登録"><p id="registration-status" role="status"></p><button type="button" class="chip" id="register-device" hidden>利用者登録</button><button type="button" class="chip" id="refresh-device">状態を更新</button></section><section class="status-row"><p id="result-count"></p><p id="data-status" class="muted"></p></section><section id="link-grid" class="link-grid"></section></main><script type="module" src="js/api-app.js?v=production-1"></script></body></html>
+<style>.managed-tile{position:relative;min-width:0}.managed-tile .link-card{height:100%}.hide-link{position:absolute;top:0;right:0;min-width:44px;min-height:44px;border:0;background:transparent;color:inherit;cursor:pointer}dialog{max-width:min(28rem,85vw);border-radius:12px}#registration{flex-wrap:wrap}#registration button[hidden]{display:none}
+.google-search{display:flex;gap:6px;margin-top:8px;padding:0}
+.google-search input{flex:1;min-width:0;width:auto;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);font-size:16px}
+.google-search input::placeholder{color:var(--muted);opacity:1}
+.google-search button{flex:none;min-height:44px;padding:0 14px;color:var(--text);border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;cursor:pointer}
+.google-search input:focus-visible,.google-search button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+</style></head><body><main class="app-shell"><header class="topbar"><div><p class="eyebrow">FAMILY LINKS</p><h1>お気に入りを、ひとつに。</h1></div><button id="theme-toggle" class="icon-button" type="button" aria-label="テーマ切り替え">☾</button></header>
+<form id="google-search" class="google-search" role="search" aria-label="Googleウェブ検索" action="https://www.google.com/search" method="get" target="_blank" rel="noopener noreferrer">
+  <input id="google-query" type="search" name="q" aria-label="Googleで検索" placeholder="Googleで検索" enterkeyhint="search" required>
+  <button type="submit">検索</button>
+</form>
+<section class="controls" aria-label="検索と表示設定"><div class="quick-controls"><div id="category-filters" class="chip-row" role="group" aria-label="カテゴリ"></div><details class="filter-details" id="filter-details"><summary>絞り込み <span class="filter-chevron" aria-hidden="true">⌄</span></summary><div class="filter-body"><label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="サイト名を検索" autocomplete="off"></label><div class="toolbar"><div id="audience-filters" class="segmented" aria-label="利用者"></div><label class="sort">並び順<select id="sort"><option value="order">おすすめ順</option><option value="name">名前順</option><option value="category">カテゴリ順</option></select></label></div></div></details></div></section><section class="status-row" id="registration" aria-label="端末登録"><p id="registration-status" role="status"></p><button type="button" class="chip" id="register-device" hidden>利用者登録</button><button type="button" class="chip" id="refresh-device">状態を更新</button></section><section class="status-row"><p id="result-count"></p><p id="data-status" class="muted"></p></section><section id="link-grid" class="link-grid"></section></main><script type="module" src="js/api-app.js?v=production-1"></script><script>
+  const googleSearch = document.getElementById("google-search");
+  const googleQuery = document.getElementById("google-query");
+  googleSearch.addEventListener("submit", event => {
+    const query = googleQuery.value.trim();
+    if (!query) {
+      event.preventDefault();
+      googleQuery.focus();
+      return;
+    }
+    googleQuery.value = query;
+  });
+</script>
+</body></html>
