@@ -10,14 +10,13 @@
 .topbar h1{font-size:clamp(17px,2.4vw,24px);letter-spacing:-.025em}
 .topbar .icon-button{background:#233e65;border-color:#5b7394;color:#fff;box-shadow:none;flex-shrink:0}
 .controls{margin-top:6px;padding:0;border:0;border-radius:0;background:transparent;backdrop-filter:none}
-.quick-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start}
 .search{height:36px;border-radius:10px}
 .filter-details{position:relative}
 .filter-details summary{display:flex;align-items:center;justify-content:center;gap:7px;min-height:36px;border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:0 13px;cursor:pointer;font-size:13px;font-weight:650;white-space:nowrap;list-style:none}
 .filter-details summary::-webkit-details-marker{display:none}
 .filter-chevron{display:inline-block;transition:transform .18s}
 .filter-details[open] .filter-chevron{transform:rotate(180deg)}
-.filter-body{position:absolute;right:0;top:calc(100% + 6px);z-index:10;width:min(580px,calc(100vw - 24px));max-height:min(65vh,490px);overflow:auto;border:1px solid var(--line);border-radius:15px;background:var(--panel);box-shadow:0 12px 32px #0002;padding:14px}
+.filter-body{margin-top:6px;width:min(580px,calc(100vw - 92px));max-height:min(65vh,490px);overflow:auto;border:1px solid var(--line);border-radius:15px;background:var(--panel);box-shadow:0 12px 32px #0002;padding:14px}
 .filter-body .chip-row{margin-top:0}
 .filter-body .toolbar{margin-top:12px}
 .status-row{margin:5px 2px 6px;min-height:18px}
@@ -29,10 +28,8 @@
 .topbar h1{font-size:19px}
 .topbar .icon-button{height:36px;width:36px;font-size:18px}
 .controls{margin-top:5px;padding:0}
-.quick-controls{gap:6px}
 .search{height:34px;padding:0 10px}
 .filter-details summary{min-height:38px;padding:0 8px;font-size:11px}
-.filter-body{right:0;width:calc(100vw - 22px)}
 .filter-body .toolbar{flex-direction:column}
 .status-row{margin:5px 2px}
 }
@@ -66,8 +63,7 @@ body { background: radial-gradient(circle at 0 0,var(--glow),transparent 32rem),
   .search input { min-width: 0; }
 }
 
-/* The categories scroll independently; the popover doesn't move the grid. */
-.quick-controls { align-items: center; }
+/* Keep categories on their own horizontally scrollable row. */
 #category-filters {
   flex-wrap: nowrap;
   margin: 0;
@@ -82,3 +78,10 @@ body { background: radial-gradient(circle at 0 0,var(--glow),transparent 32rem),
   #category-filters { gap: 5px; }
   #category-filters .chip { padding: 7px 10px; font-size: 12px; }
 }
+
+#registration[hidden], #registration button[hidden] { display: none; }
+#registration p:empty { display: none; }
+#registration button { flex-shrink: 0; }
+.results-row { align-items: flex-start; gap: 8px; }
+.results-row #result-count { padding-top: 10px; white-space: nowrap; }
+.results-row summary { width: max-content; margin-left: auto; }

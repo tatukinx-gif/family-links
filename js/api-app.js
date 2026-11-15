@@ -89,6 +89,7 @@ function render() {
 const registration = $("registration");
 const registrationMessage = $("registration-status");
 const registerButton = $("register-device");
+const refreshButton = $("refresh-device");
 function ask(title, field, acceptLabel, action) {
   const dialog = document.createElement("dialog");
   const heading = document.createElement("h2"); heading.id = "dialog-heading"; heading.textContent = title;
@@ -118,7 +119,7 @@ registerButton.onclick = () => {
   });
 };
 async function refresh() {
-  $("refresh-device").disabled = true;
+  refreshButton.disabled = true;
   try {
     const data = await api.list();
     if (currentAudience?.id !== data.audience?.id) state.audience = "all";
@@ -126,20 +127,22 @@ async function refresh() {
     state.links = data.links.filter(x => safeUrl(x.url) &&
       (x.common === true || Boolean(currentAudience)))
       .map(x => ({...x, url:safeUrl(x.url), can_hide: !x.common && x.can_hide}));
+    const pending = data.status === "pending";
+    registration.hidden = Boolean(currentAudience);
     registerButton.hidden = data.status !== "unregistered";
-    registrationMessage.textContent = data.status === "pending" ? "管理者の承認待ち" :
-      currentAudience ? "承認済み" : "共通リンクを表示中";
-    $("data-status").textContent = "";
+    refreshButton.hidden = !pending;
+    registrationMessage.textContent = pending ? "管理者の承認待ち" : "";
   } catch {
     currentAudience = null;
     state.links = [];
     state.audience = "all";
     registerButton.hidden = true;
-    registrationMessage.textContent = "";
-    $("data-status").textContent = "リンクを取得できませんでした。「状態を更新」で再試行してください。";
-  } finally { $("refresh-device").disabled = false; renderFilters(); render(); }
+    registration.hidden = false;
+    refreshButton.hidden = false;
+    registrationMessage.textContent = "リンクを取得できませんでした。「状態を更新」で再試行してください。";
+  } finally { refreshButton.disabled = false; renderFilters(); render(); }
 }
-$("refresh-device").onclick = refresh;
+refreshButton.onclick = refresh;
 async function init() {
   const config = fetchConfiguration().then(config => {
     categories = options(config.categories);
