@@ -14,9 +14,11 @@ export async function fetchConfiguration() {
       return parseCsv(csv);
     } catch { return null; }
   }
-  const columns = ["id","name","order","enabled"];
-  const [settings,categories] = await Promise.all([
-    read(587012752,["key","value"]), read(587012753,columns)
-  ]);
-  return {settings:settings ?? [{"key":"site_title","value":"Family Links"},{"key":"site_subtitle","value":"どのサイトに行こうか🎵"},{"key":"header_color","value":"#142B4C"},{"key":"header_text_color","value":"#FFFFFF"}],categories:categories ?? [{"id":"shopping","name":"買い物","order":"10","enabled":"true"},{"id":"video","name":"動画","order":"20","enabled":"true"},{"id":"blog","name":"ブログ","order":"30","enabled":"true"},{"id":"life","name":"生活","order":"40","enabled":"true"},{"id":"etc","name":"その他","order":"90","enabled":"true"},{"id":"convenience","name":"コンビニ","order":"45","enabled":"true"},{"id":"news","name":"ニュース","order":"50","enabled":"true"},{"id":"transport_travel","name":"交通・旅行","order":"60","enabled":"true"},{"id":"games","name":"ゲーム","order":"70","enabled":"true"},{"id":"food_delivery","name":"飲食・デリバリー","order":"80","enabled":"true"}]};
+  const settings = await read(587012752, ["key", "value"]);
+  return {settings: settings ?? [
+    {key:"site_title",value:"Family Links"},
+    {key:"site_subtitle",value:"どのサイトに行こうか🎵"},
+    {key:"header_color",value:"#142B4C"},
+    {key:"header_text_color",value:"#FFFFFF"}
+  ]};
 }

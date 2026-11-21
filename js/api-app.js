@@ -10,11 +10,10 @@ function button(text, active, action) {
   b.textContent = text; b.setAttribute("aria-pressed", String(active)); b.onclick = action;
   return b;
 }
-let categories = null;
-const storedCategoryName = x => x.category_name || x.category || "";
+let categories = [];
 let currentAudience = null;
-const categoryKey = x => categories ? x.category_id || categories.find(c => c.name === storedCategoryName(x))?.id || storedCategoryName(x) : storedCategoryName(x);
-const categoryName = x => categories?.find(c => c.id === categoryKey(x))?.name ?? storedCategoryName(x);
+const categoryKey = link => link.category_id;
+const categoryName = link => categories.find(category => category.id === link.category_id)?.name ?? "";
 const options = rows => {
   if (!rows) return null;
   const seen = new Set(["all"]);
@@ -24,11 +23,10 @@ const options = rows => {
 };
 function eligible(x) {
   const category = categories?.find(c => c.id === categoryKey(x));
-  return category?.enabled !== false;
+  return category?.enabled === true;
 }
 function renderFilters() {
-  const categoryOptions = categories?.filter(x=>x.enabled) ??
-    [...new Set(state.links.map(storedCategoryName).filter(Boolean))].map(name=>({id:name,name}));
+  const categoryOptions = categories.filter(category => category.enabled);
   for (const [element,key,rows] of [
     ["category-filters","category",categoryOptions],
     ["audience-filters","audience",currentAudience ? [{id:"common",name:"共通"},{id:"mine",name:currentAudience.name}] : []]
@@ -60,7 +58,15 @@ function matchesAudience(link, selected) {
 }
 function render() {
   const links = state.links.filter(x => eligible(x) && x.name.toLocaleLowerCase().includes(state.query.toLocaleLowerCase()) && (state.category === "all" || categoryKey(x) === state.category) && matchesAudience(x, state.audience));
-  links.sort((a,b) => state.sort === "name" ? a.name.localeCompare(b.name,"ja") : state.sort === "category" ? (categories ? order(categories.find(c=>c.id===categoryKey(a)) ?? {order:""}) - order(categories.find(c=>c.id===categoryKey(b)) ?? {order:""}) : categoryName(a).localeCompare(categoryName(b),"ja")) || order(a)-order(b) : order(a)-order(b));
+  links.sort((a, b) => {
+    if (state.sort === "name") return a.name.localeCompare(b.name, "ja");
+    if (state.sort === "category") {
+      const categoryOrder = order(categories.find(c => c.id === a.category_id) ?? {}) -
+        order(categories.find(c => c.id === b.category_id) ?? {});
+      if (categoryOrder) return categoryOrder;
+    }
+    return order(a) - order(b);
+  });
   $("result-count").textContent = links.length + "件";
   $("link-grid").replaceChildren(...links.map(x => {
     const a = document.createElement("a"); a.className = "link-card"; a.href = x.url; a.target = "_blank"; a.rel = "noopener noreferrer"; a.title = x.name;
@@ -122,6 +128,11 @@ async function refresh() {
   refreshButton.disabled = true;
   try {
     const data = await api.list();
+    if (!Array.isArray(data.categories)) throw new Error("カテゴリー情報を取得できませんでした");
+    categories = options(data.categories) ?? [];
+    if (state.category !== "all" && !categories.some(c => c.id === state.category && c.enabled)) {
+      state.category = "all";
+    }
     if (currentAudience?.id !== data.audience?.id) state.audience = "all";
     currentAudience = data.audience;
     state.links = data.links.filter(x => safeUrl(x.url) &&
@@ -134,6 +145,7 @@ async function refresh() {
     registrationMessage.textContent = pending ? "管理者の承認待ち" : "";
   } catch {
     currentAudience = null;
+    categories = [];
     state.links = [];
     state.audience = "all";
     registerButton.hidden = true;
@@ -145,7 +157,6 @@ async function refresh() {
 refreshButton.onclick = refresh;
 async function init() {
   const config = fetchConfiguration().then(config => {
-    categories = options(config.categories);
     applySettings(config.settings);
     renderFilters(); render();
   });
